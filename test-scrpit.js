@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Fonction pour récupérer les films par catégorie
     const fetchMovies = async (category, callback) => {
-        let url = `${API_URL}titles/?sort_by=-imdb_score&page_size=40`;
+        let url = `${API_URL}titles/?sort_by=-imdb_score&page_size=20`;
         if (category) {
             url += `&genre=${category}`;
         }
@@ -15,9 +15,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Fonction pour récupérer le film avec le meilleur score IMDb
     const fetchBestMovie = async () => {
-        const response = await fetch(`${API_URL}titles/?sort_by=-imdb_score&page_size=100`);
+        const response = await fetch(`${API_URL}titles/?sort_by=-imdb_score&page_size=1`);
         const data = await response.json();
         return data.results[0];
+    };
+
+    // Fonction pour récupérer les détails complets d'un film par son ID
+    const fetchMovieDetails = async (id) => {
+        const response = await fetch(`${API_URL}titles/${id}`);
+        const movie = await response.json();
+        return movie;
     };
 
     // Fonction pour créer un élément de film
@@ -25,7 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const movieElement = document.createElement("div");
         movieElement.classList.add("movie");
         movieElement.innerHTML = `<img src="${movie.image_url}" alt="${movie.title}" />`;
-
         // Ajoute un écouteur d'événements pour afficher les détails du film dans une modale
         movieElement.addEventListener("click", () => showModal(movie.id));
         return movieElement;
@@ -33,8 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Fonction pour afficher les détails du film dans une modale
     const showModal = async (id) => {
-        const response = await fetch(`${API_URL}titles/${id}`);
-        const movie = await response.json();
+        const movie = await fetchMovieDetails(id);
         const modal = document.getElementById("modal");
         const modalDetails = document.getElementById("modal-details");
 
@@ -96,15 +101,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Fonction pour charger les films et mettre à jour la section du film vedette
     const loadMovies = async () => {
-        // Récupère le meilleur film et met à jour la section du film vedette
+        // Récupère le meilleur film
         const bestMovie = await fetchBestMovie();
+        // Récupère les détails complets du meilleur film
+        const bestMovieDetails = await fetchMovieDetails(bestMovie.id);
+
         const bestMovieSection = document.getElementById("best-movie");
-        bestMovieSection.style.backgroundImage = `url(${bestMovie.image_url})`;
+        bestMovieSection.style.backgroundImage = `url(${bestMovieDetails.image_url})`;
 
-        document.getElementById("best-movie-title").innerText = bestMovie.title;
-        document.getElementById("best-movie-summary").innerText = bestMovie.description;
-
-        document.getElementById("more-info-button").addEventListener("click", () => showModal(bestMovie.id));
+        document.getElementById("best-movie-title").innerText = bestMovieDetails.title;
+        document.getElementById("best-movie-summary").innerText = bestMovieDetails.description;
+        document.getElementById("play-button").addEventListener("click", () => showModal(bestMovieDetails.id));
+        document.getElementById("more-info-button").addEventListener("click", () => showModal(bestMovieDetails.id));
 
         // Affiche les films les mieux notés toutes catégories confondues
         fetchMovies(null, (movies) => {
