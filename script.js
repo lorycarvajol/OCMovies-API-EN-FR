@@ -13,11 +13,17 @@ document.addEventListener("DOMContentLoaded", () => {
         callback(filteredResults);
     };
 
-    // Fonction pour récupérer le film avec le meilleur score IMDb
+    // Fonction pour récupérer le film avec le meilleur score IMDb et ses détails
     const fetchBestMovie = async () => {
-        const response = await fetch(`${API_URL}titles/?sort_by=-imdb_score&page_size=100`);
+        const response = await fetch(`${API_URL}titles/?sort_by=-imdb_score&page_size=1`);
         const data = await response.json();
-        return data.results[0];
+        const bestMovieId = data.results[0].id;
+
+        // Récupère les détails du meilleur film
+        const bestMovieResponse = await fetch(`${API_URL}titles/${bestMovieId}`);
+        const bestMovieDetails = await bestMovieResponse.json();
+
+        return bestMovieDetails;
     };
 
     // Fonction pour créer un élément de film
