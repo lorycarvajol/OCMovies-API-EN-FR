@@ -18,6 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return data.results[0];
     };
 
+    const fetchMovieDetails = async (id) => {
+        const response = await fetch(`${API_URL}titles/${id}`);
+        return await response.json();
+    };
+
     const createMovieElement = (movie) => {
         const movieElement = document.createElement("div");
         movieElement.classList.add("movie");
@@ -28,27 +33,26 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const showModal = async (id) => {
-        const response = await fetch(`${API_URL}titles/${id}`);
-        const movie = await response.json();
+        const movie = await fetchMovieDetails(id);
         const modal = document.getElementById("modal");
         const modalDetails = document.getElementById("modal-details");
 
         modalDetails.innerHTML = `
-      <img src="${movie.image_url}" alt="${movie.title}" />
-      <h2>${movie.title}</h2>
-      <ul>
-          <li>Genre: ${movie.genres.join(", ")}</li>
-          <li>Date de sortie: ${movie.date_published}</li>
-          <li>Rated: ${movie.rated}</li>
-          <li>Score Imdb: ${movie.imdb_score}</li>
-          <li>Réalisateur: ${movie.directors.join(", ")}</li>
-          <li>Acteurs: ${movie.actors.join(", ")}</li>
-          <li>Durée: ${movie.duration} minutes</li>
-          <li>Pays d'origine: ${movie.countries.join(", ")}</li>
-          <li>Box Office: ${movie.worldwide_gross_income}</li>
-      </ul>
-      <p>${movie.description}</p>
-    `;
+            <img src="${movie.image_url}" alt="${movie.title}" />
+            <h2>${movie.title}</h2>
+            <ul>
+                <li>Genre: ${movie.genres.join(", ")}</li>
+                <li>Date de sortie: ${movie.date_published}</li>
+                <li>Rated: ${movie.rated}</li>
+                <li>Score Imdb: ${movie.imdb_score}</li>
+                <li>Réalisateur: ${movie.directors.join(", ")}</li>
+                <li>Acteurs: ${movie.actors.join(", ")}</li>
+                <li>Durée: ${movie.duration} minutes</li>
+                <li>Pays d'origine: ${movie.countries.join(", ")}</li>
+                <li>Box Office: ${movie.worldwide_gross_income}</li>
+            </ul>
+            <p>${movie.description}</p>
+        `;
         modal.style.display = "block";
     };
 
@@ -58,12 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     document.querySelector(".close").addEventListener("click", closeModal);
-    window.addEventListener("click", (event) => {
-        const modal = document.getElementById("modal");
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    });
 
     const scrollMoviesList = (containerId, direction) => {
         const container = document.getElementById(containerId);
@@ -91,14 +89,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const loadMovies = async () => {
         const bestMovie = await fetchBestMovie();
-        const bestMovieSection = document.getElementById("best-movie");
-        const bestMovieImage = document.getElementById("best-movie-image");
-        bestMovieImage.style.backgroundImage = `url(${bestMovie.image_url})`;
+        const bestMovieDetails = await fetchMovieDetails(bestMovie.id);
+        const bestMovieSection = document.getElementById("best-movie-image");
+        bestMovieSection.style.backgroundImage = `url(${bestMovieDetails.image_url})`;
 
-        document.getElementById("best-movie-title").innerText = bestMovie.title;
-        document.getElementById("best-movie-summary").innerText = bestMovie.description;
-
-        document.getElementById("more-info-button").addEventListener("click", () => showModal(bestMovie.id));
+        document.getElementById("best-movie-title").innerText = bestMovieDetails.title;
+        document.getElementById("best-movie-summary").innerText = bestMovieDetails.description;
+        document.getElementById("more-info-button").addEventListener("click", () => showModal(bestMovieDetails.id));
 
         fetchMovies(null, (movies) => {
             const section = document.getElementById("top-rated-movies");
