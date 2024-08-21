@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
+
 <body>
     <header>
         <div class="header-content">
@@ -30,7 +32,7 @@
     <div class="scroll-down-indicator" id="scroll-down-indicator">&#x21E3;</div>
     <main>
         <section id="best-movie" class="best-movie">
-            <div class="best-movie-image" style="background-image: url('best_movie_image_url')"></div>
+            <div id="best-movie-image" class="best-movie-image"></div>
             <div class="best-movie-content">
                 <h2 id="best-movie-title">Titre du meilleur film</h2>
                 <h3 id="best-movie-summary">Résumé du meilleur film</h3>
@@ -39,7 +41,7 @@
                 </div>
             </div>
         </section>
-         <section id="top-rated">
+        <section id="top-rated">
             <h2>Films les mieux notés</h2>
             <div class="movies-list-container">
                 <button class="scroll-button" id="scroll-left-top-rated">&lt;</button>
@@ -72,7 +74,6 @@
             </div>
         </section>
     </main>
-   
     <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -81,4 +82,5 @@
     </div>
     <script src="{% static 'js/script.js' %}"></script>
 </body>
+
 </html>
