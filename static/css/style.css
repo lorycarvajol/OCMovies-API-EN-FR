@@ -222,6 +222,7 @@ nav ul li a:hover {
 
 /* Style pour les titres de section */
 h2 {
+  margin-left: 200px;
   font-size: 1.8em;
   margin: 1em 0;
 }
